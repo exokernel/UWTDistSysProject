@@ -148,43 +148,62 @@ function TodoList({ doc, changeDoc }: TodoListProps) {
               />
 
               {editingId === todo.id ? (
-                <input
-                  type="text"
-                  className="todo-edit-input"
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                  onBlur={() => saveEdit(todo.id)}
-                  onKeyDown={(e) => handleEditKeyDown(e, todo.id)}
-                  autoFocus
-                />
+                <div className="edit-form">
+                  <input
+                    type="text"
+                    className="todo-edit-input"
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    onKeyDown={(e) => handleEditKeyDown(e, todo.id)}
+                    autoFocus
+                  />
+                  <button
+                    className="save-button"
+                    onClick={() => saveEdit(todo.id)}
+                    aria-label="Save"
+                    title="Save (Enter)"
+                  >
+                    ✓
+                  </button>
+                  <button
+                    className="cancel-button"
+                    onClick={cancelEdit}
+                    aria-label="Cancel"
+                    title="Cancel (Esc)"
+                  >
+                    ✕
+                  </button>
+                </div>
               ) : (
-                <span
-                  className="todo-text"
-                  onDoubleClick={() => startEditing(todo)}
-                  title="Double-click to edit"
-                >
-                  {todo.text}
-                </span>
-              )}
+                <>
+                  <span
+                    className="todo-text"
+                    onDoubleClick={() => startEditing(todo)}
+                    title="Double-click to edit"
+                  >
+                    {todo.text}
+                  </span>
 
-              <div className="todo-actions">
-                <button
-                  className="edit-button"
-                  onClick={() => startEditing(todo)}
-                  aria-label="Edit todo"
-                  title="Edit"
-                >
-                  ✎
-                </button>
-                <button
-                  className="delete-button"
-                  onClick={() => deleteTodo(todo.id)}
-                  aria-label="Delete todo"
-                  title="Delete"
-                >
-                  ×
-                </button>
-              </div>
+                  <div className="todo-actions">
+                    <button
+                      className="edit-button"
+                      onClick={() => startEditing(todo)}
+                      aria-label="Edit todo"
+                      title="Edit"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      className="delete-button"
+                      onClick={() => deleteTodo(todo.id)}
+                      aria-label="Delete todo"
+                      title="Delete"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </>
+              )}
             </li>
           ))}
         </ul>
@@ -200,9 +219,9 @@ function TodoList({ doc, changeDoc }: TodoListProps) {
 
       {/* Conflict demo hint */}
       <div className="conflict-hint">
-        <strong>Try this:</strong> Open in two tabs and edit the same item. Automerge 
-        uses character-level CRDTs, so edits to different parts of the text will be 
-        merged together!
+        <strong>Demo concurrent edits:</strong> Open two tabs, click edit (✎) on the 
+        same item in both, make different changes, then click save (✓) in each tab. 
+        Watch Automerge merge the character-level changes!
       </div>
     </div>
   );
