@@ -12,7 +12,7 @@ A collaborative TODO list application demonstrating Conflict-free Replicated Dat
 
 ## Architecture
 
-```
+```text
 ┌─────────────────┐         ┌─────────────────┐
 │     Node 1      │◄───────►│     Node 2      │
 │  (Port 3001)    │  peer   │  (Port 3002)    │
@@ -41,8 +41,9 @@ docker-compose up --build
 ```
 
 This starts:
-- **Node 1** at http://localhost:3001
-- **Node 2** at http://localhost:3002
+
+- **Node 1** at <http://localhost:3001>
+- **Node 2** at <http://localhost:3002>
 
 Open Node 1 in one browser, copy the URL (with hash), and open it in Node 2 in another browser. Changes sync between them!
 
@@ -126,24 +127,28 @@ Both laptops now share the same document, synced through their respective server
 ### Firewall Configuration
 
 Ensure these ports are open:
+
 - **Port 80** (or your chosen port): HTTP + WebSocket from browsers
 - Between VMs: Allow WebSocket connections on the configured port
 
 ### Cloud Provider Examples
 
 **AWS EC2:**
+
 ```bash
 # Security group: Allow inbound TCP 80 from anywhere
 # Allow inbound TCP 80 from the other EC2's security group
 ```
 
 **DigitalOcean:**
+
 ```bash
 # Firewall: Allow inbound TCP 80
 # Ensure both droplets can communicate
 ```
 
 **Google Cloud:**
+
 ```bash
 # Firewall rule: Allow tcp:80 from 0.0.0.0/0
 ```
