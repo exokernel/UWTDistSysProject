@@ -11,8 +11,8 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - NODE_NAME=node1
-      # Connect to node2 using Docker's internal DNS
-      - PEER_URLS=ws://node2:3000
+      # Connect to other nodes
+      - PEER_URLS=ws://node2:3000,ws://node3:3000
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
@@ -33,8 +33,32 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - NODE_NAME=node2
-      # Connect back to node1 for bidirectional sync
-      - PEER_URLS=ws://node1:3000
+      # Connect to other nodes
+      - PEER_URLS=ws://node1:3000,ws://node3:3000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Node 3 - Optional third sync server (start with: docker-compose up node3 -d)
+  node3:
+    build: .
+    container_name: crdt-todo-node3
+    profiles:
+      - three-nodes
+    ports:
+      - "3003:3000"
+    volumes:
+      - node3-data:/app/data
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - NODE_NAME=node3
+      # Connect to other nodes
+      - PEER_URLS=ws://node1:3000,ws://node2:3000
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
@@ -47,4 +71,6 @@ volumes:
   node1-data:
     driver: local
   node2-data:
+    driver: local
+  node3-data:
     driver: local

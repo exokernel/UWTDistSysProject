@@ -34,6 +34,8 @@ A collaborative TODO list application demonstrating Conflict-free Replicated Dat
 
 ## Quick Start (Local Multi-Node)
 
+### Two Nodes (Default)
+
 Run two sync servers locally that peer with each other:
 
 ```bash
@@ -46,6 +48,48 @@ This starts:
 - **Node 2** at <http://localhost:3002>
 
 Open Node 1 in one browser, copy the URL (with hash), and open it in Node 2 in another browser. Changes sync between them!
+
+### Three Nodes (Demo Dynamic Membership)
+
+Start with two nodes, then add a third to demonstrate dynamic cluster membership:
+
+```bash
+# Start with 2 nodes
+docker-compose up --build -d
+
+# Create some todos, sync between node1 and node2...
+
+# Later, add node3 to the cluster
+docker-compose --profile three-nodes up node3 -d
+
+# Check that node3 connected
+docker logs crdt-todo-node3
+```
+
+Now you have:
+
+- **Node 1** at <http://localhost:3001>
+- **Node 2** at <http://localhost:3002>
+- **Node 3** at <http://localhost:3003>
+
+Open the same document URL on Node 3 - it will sync all existing data from the other nodes!
+
+```text
+┌─────────────────┐
+│     Node 1      │
+│  (Port 3001)    │
+└───────┬─────────┘
+        │
+        ├────────────────────┐
+        │                    │
+        ▼                    ▼
+┌───────┴─────────┐  ┌───────┴─────────┐
+│     Node 2      │◄─┤     Node 3      │
+│  (Port 3002)    │  │  (Port 3003)    │
+└─────────────────┘  └─────────────────┘
+```
+
+All three nodes form a fully connected mesh and sync with each other.
 
 ## Development
 
@@ -175,7 +219,7 @@ Ensure these ports are open:
 
 ## Project Structure
 
-```
+```text
 ├── server/
 │   ├── src/
 │   │   └── index.ts      # Express + WebSocket sync server
