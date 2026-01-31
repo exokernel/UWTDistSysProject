@@ -158,18 +158,30 @@ function TodoList({ doc, changeDoc }: TodoListProps) {
                 <span
                   className="todo-text"
                   onDoubleClick={() => startEditing(todo)}
+                  title="Double-click to edit"
                 >
                   {todo.text}
                 </span>
               )}
 
-              <button
-                className="delete-button"
-                onClick={() => deleteTodo(todo.id)}
-                aria-label="Delete todo"
-              >
-                ×
-              </button>
+              <div className="todo-actions">
+                <button
+                  className="edit-button"
+                  onClick={() => startEditing(todo)}
+                  aria-label="Edit todo"
+                  title="Edit"
+                >
+                  ✎
+                </button>
+                <button
+                  className="delete-button"
+                  onClick={() => deleteTodo(todo.id)}
+                  aria-label="Delete todo"
+                  title="Delete"
+                >
+                  ×
+                </button>
+              </div>
             </li>
           ))}
         </ul>
@@ -182,6 +194,12 @@ function TodoList({ doc, changeDoc }: TodoListProps) {
           <span>{completedTodos} completed</span>
         </div>
       )}
+
+      {/* Conflict demo hint */}
+      <div className="conflict-hint">
+        <strong>Try this:</strong> Open in two tabs, edit the same item simultaneously, 
+        then watch Automerge merge the changes!
+      </div>
     </div>
   );
 }
