@@ -1,4 +1,5 @@
 import { useState, useCallback, FormEvent, KeyboardEvent } from "react";
+import { next as Automerge } from "@automerge/automerge";
 import { Todo, TodoDoc } from "./types";
 
 interface TodoListProps {
@@ -64,7 +65,7 @@ function TodoList({ doc, changeDoc }: TodoListProps) {
     setEditText(todo.text);
   }, []);
 
-  // Save edited todo
+  // Save edited todo using updateText for character-level CRDT merging
   const saveEdit = useCallback(
     (id: string) => {
       const text = editText.trim();
@@ -73,9 +74,11 @@ function TodoList({ doc, changeDoc }: TodoListProps) {
         deleteTodo(id);
       } else {
         changeDoc((d) => {
-          const todo = d.todos.find((t) => t.id === id);
-          if (todo) {
-            todo.text = text;
+          const index = d.todos.findIndex((t) => t.id === id);
+          if (index !== -1) {
+            // Use updateText for character-by-character CRDT merging
+            // This allows concurrent edits to different parts of the text to be merged
+            Automerge.updateText(d, ["todos", index, "text"], text);
           }
         });
       }
@@ -197,8 +200,9 @@ function TodoList({ doc, changeDoc }: TodoListProps) {
 
       {/* Conflict demo hint */}
       <div className="conflict-hint">
-        <strong>Try this:</strong> Open in two tabs, edit the same item simultaneously, 
-        then watch Automerge merge the changes!
+        <strong>Try this:</strong> Open in two tabs and edit the same item. Automerge 
+        uses character-level CRDTs, so edits to different parts of the text will be 
+        merged together!
       </div>
     </div>
   );
