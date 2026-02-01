@@ -197,6 +197,107 @@ Ensure these ports are open:
 # Firewall rule: Allow tcp:80 from 0.0.0.0/0
 ```
 
+## Remote Deployment (Three VMs/Servers)
+
+For a more impressive demo with three nodes, each on a separate VM:
+
+```text
+┌─────────────────┐
+│   VM-A (Node1)  │
+│   IP: 10.0.0.1  │
+└────────┬────────┘
+         │
+    ┌────┴────┬────────────────┐
+    │         │                │
+    ▼         ▼                ▼
+┌───┴───┐ ┌───┴───┐      ┌─────┴─────┐
+│ VM-B  │ │ VM-C  │      │  Laptops  │
+│Node 2 │ │Node 3 │      │ A, B, C   │
+└───────┘ └───────┘      └───────────┘
+```
+
+### Step 1: Deploy Node 1 (VM-A)
+
+```bash
+git clone <your-repo-url>
+cd dist-sys-project
+
+cat > docker-compose.override.yml << 'EOF'
+services:
+  node1:
+    ports:
+      - "80:3000"
+    environment:
+      - NODE_NAME=vm-a
+      - PEER_URLS=ws://<VM-B-IP>:80,ws://<VM-C-IP>:80
+EOF
+
+docker-compose up --build node1 -d
+```
+
+### Step 2: Deploy Node 2 (VM-B)
+
+```bash
+git clone <your-repo-url>
+cd dist-sys-project
+
+cat > docker-compose.override.yml << 'EOF'
+services:
+  node2:
+    ports:
+      - "80:3000"
+    environment:
+      - NODE_NAME=vm-b
+      - PEER_URLS=ws://<VM-A-IP>:80,ws://<VM-C-IP>:80
+EOF
+
+docker-compose up --build node2 -d
+```
+
+### Step 3: Deploy Node 3 (VM-C)
+
+```bash
+git clone <your-repo-url>
+cd dist-sys-project
+
+cat > docker-compose.override.yml << 'EOF'
+services:
+  node3:
+    ports:
+      - "80:3000"
+    environment:
+      - NODE_NAME=vm-c
+      - PEER_URLS=ws://<VM-A-IP>:80,ws://<VM-B-IP>:80
+EOF
+
+docker-compose --profile three-nodes up --build node3 -d
+```
+
+### Step 4: Connect from Three Laptops
+
+1. **Laptop A**: Open `http://<VM-A-IP>` and create a todo list
+2. **Laptop B**: Open `http://<VM-B-IP>#automerge:...` (same document hash)
+3. **Laptop C**: Open `http://<VM-C-IP>#automerge:...` (same document hash)
+
+All three laptops now share the same document through three different servers!
+
+### Demo Scenarios with Three Nodes
+
+**Scenario 1: Multi-hop Propagation**
+- Make a change on Laptop A (connected to VM-A)
+- Watch it appear on Laptop B (VM-B) and Laptop C (VM-C)
+- Changes flow: A → VM-A → VM-B → B and A → VM-A → VM-C → C
+
+**Scenario 2: Partial Network Partition**
+- Stop VM-B: `docker-compose stop node2` on VM-B
+- Laptops A and C can still sync through VM-A ↔ VM-C
+- Restart VM-B and watch it catch up with all changes
+
+**Scenario 3: Three-Way Concurrent Edit**
+- Each laptop edits the same todo item simultaneously
+- Save all three edits
+- Watch Automerge merge all three sets of changes!
+
 ## Demonstrating CRDT Conflict Resolution
 
 ### Concurrent Edits Demo
