@@ -13,6 +13,24 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Global error handlers to prevent crashes from peer connection failures
+process.on("uncaughtException", (err) => {
+  // Ignore DNS/connection errors for peer WebSocket connections
+  if (err.message?.includes("getaddrinfo") || 
+      err.message?.includes("ECONNREFUSED") ||
+      err.message?.includes("ENOTFOUND") ||
+      err.message?.includes("EAI_AGAIN")) {
+    console.warn(`[PEER CONNECTION ERROR] ${err.message} - will retry automatically`);
+    return;
+  }
+  console.error("[UNCAUGHT EXCEPTION]", err);
+  // For other errors, log but don't crash
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.warn("[UNHANDLED REJECTION]", reason);
+});
+
 // Configuration
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "..", "data");
