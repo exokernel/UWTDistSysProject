@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="120" fill="#4f46e5" opacity="0.1"/>
+  
+  <!-- Three interconnected nodes representing distributed sync -->
+  <!-- Node 1 (top) -->
+  <circle cx="128" cy="60" r="28" fill="#4f46e5"/>
+  <circle cx="128" cy="60" r="14" fill="white"/>
+  
+  <!-- Node 2 (bottom left) -->
+  <circle cx="68" cy="180" r="28" fill="#4f46e5"/>
+  <circle cx="68" cy="180" r="14" fill="white"/>
+  
+  <!-- Node 3 (bottom right) -->
+  <circle cx="188" cy="180" r="28" fill="#4f46e5"/>
+  <circle cx="188" cy="180" r="14" fill="white"/>
+  
+  <!-- Connection lines (bidirectional sync) -->
+  <line x1="128" y1="88" x2="85" y2="155" stroke="#4f46e5" stroke-width="6" stroke-linecap="round"/>
+  <line x1="128" y1="88" x2="171" y2="155" stroke="#4f46e5" stroke-width="6" stroke-linecap="round"/>
+  <line x1="96" y1="180" x2="160" y2="180" stroke="#4f46e5" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- Sync arrows on connections -->
+  <!-- Arrow on top-left line -->
+  <polygon points="95,135 105,145 85,150" fill="#4f46e5"/>
+  <polygon points="118,108 108,98 128,93" fill="#4f46e5"/>
+  
+  <!-- Arrow on top-right line -->
+  <polygon points="161,135 151,145 171,150" fill="#4f46e5"/>
+  <polygon points="138,108 148,98 128,93" fill="#4f46e5"/>
+  
+  <!-- Arrow on bottom line -->
+  <polygon points="140,172 130,180 140,188" fill="#4f46e5"/>
+  <polygon points="116,172 126,180 116,188" fill="#4f46e5"/>
+</svg>
