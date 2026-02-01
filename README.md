@@ -12,19 +12,17 @@ A collaborative TODO list application demonstrating Conflict-free Replicated Dat
 
 ## Architecture
 
-```text
-┌─────────────────┐         ┌─────────────────┐
-│     Node 1      │◄───────►│     Node 2      │
-│  (Port 3001)    │  peer   │  (Port 3002)    │
-│                 │  sync   │                 │
-└────────▲────────┘         └────────▲────────┘
-         │                           │
-         │ WebSocket                 │ WebSocket
-         │                           │
-    ┌────┴────┐                 ┌────┴────┐
-    │ Browser │                 │ Browser │
-    │ (User A)│                 │ (User B)│
-    └─────────┘                 └─────────┘
+```mermaid
+flowchart TB
+    subgraph servers [Sync Servers]
+        N1[Node 1<br/>Port 3001]
+        N2[Node 2<br/>Port 3002]
+    end
+    
+    N1 <-->|peer sync| N2
+    
+    B1[Browser<br/>User A] <-->|WebSocket| N1
+    B2[Browser<br/>User B] <-->|WebSocket| N2
 ```
 
 ## Prerequisites
@@ -74,19 +72,15 @@ Now you have:
 
 Open the same document URL on Node 3 - it will sync all existing data from the other nodes!
 
-```text
-┌─────────────────┐
-│     Node 1      │
-│  (Port 3001)    │
-└───────┬─────────┘
-        │
-        ├────────────────────┐
-        │                    │
-        ▼                    ▼
-┌───────┴─────────┐  ┌───────┴─────────┐
-│     Node 2      │◄─┤     Node 3      │
-│  (Port 3002)    │  │  (Port 3003)    │
-└─────────────────┘  └─────────────────┘
+```mermaid
+flowchart TB
+    N1[Node 1<br/>Port 3001]
+    N2[Node 2<br/>Port 3002]
+    N3[Node 3<br/>Port 3003]
+    
+    N1 <--> N2
+    N2 <--> N3
+    N1 <--> N3
 ```
 
 All three nodes form a fully connected mesh and sync with each other.
@@ -201,19 +195,21 @@ Ensure these ports are open:
 
 For a more impressive demo with three nodes, each on a separate VM:
 
-```text
-┌─────────────────┐
-│   VM-A (Node1)  │
-│   IP: 10.0.0.1  │
-└────────┬────────┘
-         │
-    ┌────┴────┬────────────────┐
-    │         │                │
-    ▼         ▼                ▼
-┌───┴───┐ ┌───┴───┐      ┌─────┴─────┐
-│ VM-B  │ │ VM-C  │      │  Laptops  │
-│Node 2 │ │Node 3 │      │ A, B, C   │
-└───────┘ └───────┘      └───────────┘
+```mermaid
+flowchart TB
+    subgraph vms [Virtual Machines]
+        VMA[VM-A<br/>Node 1]
+        VMB[VM-B<br/>Node 2]
+        VMC[VM-C<br/>Node 3]
+    end
+    
+    VMA <--> VMB
+    VMB <--> VMC
+    VMA <--> VMC
+    
+    LA[Laptop A] <-->|WebSocket| VMA
+    LB[Laptop B] <-->|WebSocket| VMB
+    LC[Laptop C] <-->|WebSocket| VMC
 ```
 
 ### Step 1: Deploy Node 1 (VM-A)
