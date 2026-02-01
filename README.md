@@ -8,7 +8,7 @@ A collaborative TODO list application demonstrating Conflict-free Replicated Dat
 - **Character-level merging**: Concurrent edits to the same text are merged intelligently
 - **Multi-node architecture**: Multiple sync servers can peer with each other
 - **Offline support**: Local changes are persisted and sync when reconnected
-- **No central authority**: Each node is a full peer, no single point of failure
+- **Decentralized**: Each node is a full peer, no single point of failure
 
 ## Architecture
 
@@ -284,16 +284,19 @@ All three laptops now share the same document through three different servers!
 ### Demo Scenarios with Three Nodes
 
 **Scenario 1: Multi-hop Propagation**
+
 - Make a change on Laptop A (connected to VM-A)
 - Watch it appear on Laptop B (VM-B) and Laptop C (VM-C)
 - Changes flow: A → VM-A → VM-B → B and A → VM-A → VM-C → C
 
 **Scenario 2: Partial Network Partition**
+
 - Stop VM-B: `docker-compose stop node2` on VM-B
 - Laptops A and C can still sync through VM-A ↔ VM-C
 - Restart VM-B and watch it catch up with all changes
 
 **Scenario 3: Three-Way Concurrent Edit**
+
 - Each laptop edits the same todo item simultaneously
 - Save all three edits
 - Watch Automerge merge all three sets of changes!
