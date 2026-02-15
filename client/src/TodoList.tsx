@@ -2,6 +2,18 @@ import { useState, useCallback, FormEvent, KeyboardEvent } from "react";
 import { next as Automerge } from "@automerge/automerge";
 import { Todo, TodoDoc } from "./types";
 
+// Fallback for crypto.randomUUID() in non-secure contexts (HTTP)
+const generateId = (): string => {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 interface TodoListProps {
   doc: TodoDoc;
   changeDoc: (changeFn: (doc: TodoDoc) => void) => void;
@@ -21,7 +33,7 @@ function TodoList({ doc, changeDoc }: TodoListProps) {
 
       changeDoc((d) => {
         d.todos.push({
-          id: crypto.randomUUID(),
+          id: generateId(),
           text,
           completed: false,
           createdAt: Date.now(),
